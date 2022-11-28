@@ -24,9 +24,7 @@ const drawFromCsv = () => {
   <div class="greetings">
     {{ drawFromCsv() }}
     <h1 class="green">{{ msg }}</h1>
-    <h3>
-      CSV loaded
-    </h3>
+    <h3>CSV loaded</h3>
   </div>
 </template>
 
