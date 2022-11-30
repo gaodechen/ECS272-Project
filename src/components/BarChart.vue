@@ -17,10 +17,9 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import * as d3 from "d3";
 import { DataLoader } from "../models/data";
-
 export default {
   name: "BarChart",
   data() {
@@ -50,7 +49,6 @@ export default {
       return new Promise((res, rej) => {
         d3.csv("./data.csv").then((csvData) => {
           const array = dataLoader.getBarData(csvData, feature);
-
           d3.select("#bar").select("svg").remove();
           this.update(array);
         });
@@ -69,21 +67,17 @@ export default {
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
       const staticColor = "hsla(160, 100%, 37%, 1)";
       const hoverColor = "hsla(160, 100%, 37%, 0.2)";
-
       const x = d3
         .scaleBand()
         .range([0, width])
         .domain(data.map((d) => d.artist))
         .padding(0.2);
-
       const y = d3
         .scaleLinear()
         .domain([0, d3.max(data, (d) => d.yVal)])
         .range([height, 0]);
-
       const tooltip = d3
         .select("body")
         .append("div")
@@ -96,7 +90,6 @@ export default {
         .style("border-radius", "4px")
         .style("color", "#fff")
         .text("a simple tooltip");
-
       const rect = svg
         .selectAll("g")
         .data(data)
@@ -132,7 +125,6 @@ export default {
           this.$router.push("/about");
           tooltip.html(``).style("visibility", "hidden");
         });
-
       rect
         .transition()
         .ease(d3.easeLinear)
@@ -140,16 +132,12 @@ export default {
         .attr("y", (d) => y(d.yVal))
         .attr("height", (d) => height - y(d.yVal))
         .delay((d, i) => i * 100);
-
       const xAxis = svg.append("g").attr("transform", `translate(0,${height})`);
       const yAxis = svg.append("g").attr("class", "myYaxis");
-
       x.domain(data.map((d) => d.artist));
       xAxis.transition().duration(400).call(d3.axisBottom(x));
-
       y.domain([0, d3.max(data, (d) => d.yVal)]);
       yAxis.transition().duration(400).call(d3.axisLeft(y));
-
       return svg.node();
     },
   },
