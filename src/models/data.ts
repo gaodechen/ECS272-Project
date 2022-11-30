@@ -52,4 +52,38 @@ export class DataLoader {
       (d: any) => d[groupBy]
     );
   };
+
+  getBarData = (csvData: any, feature: any) => {
+    this.csvData = csvData;
+
+    csvData.forEach((d: any) => {
+      for (const column of csvData.columns) {
+        if (DataLoader.BooleanColumns.includes(column)) {
+          d[column] = d[column] == "True";
+        } else if (DataLoader.IntegerColumns.includes(column)) {
+          d[column] = parseInt(d[column]);
+        } else if (!DataLoader.StringColumns.includes(column)) {
+          d[column] = parseFloat(d[column]);
+        }
+      }
+    });
+
+    const array = Array.from(
+      this.sumBy("artist", "popularity"),
+      ([artist, yVal]) => ({ artist, yVal })
+    ).sort((a: any, b: any) => b.yVal - a.yVal);
+    
+    const topArtist = array.slice(0, 10);
+
+    console.log(array);
+
+    const result = this.averageBy("artist", feature);
+
+    topArtist.map(item => {
+      item.yVal = result.get(item.artist);
+      console.log(item);
+    })
+
+    return topArtist;
+  }
 }
