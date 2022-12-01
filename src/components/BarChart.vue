@@ -19,7 +19,14 @@
 
 <script lang="ts">
 import * as d3 from "d3";
-import { DataLoader } from "../models/data";
+import { DataLoader } from "../stores/data";
+import { trimName } from "../stores/artists";
+import {
+  UserOutlined,
+  LaptopOutlined,
+  NotificationOutlined,
+} from "@ant-design/icons-vue";
+
 export default {
   name: "BarChart",
   data() {
@@ -55,10 +62,20 @@ export default {
         res();
       });
     },
+    handleBarClick(d) {
+      this.$router
+        .push({
+          name: "artist",
+          params: { id: d.artist },
+        })
+        .then(() => {
+          console.log("Redirected to", this.$route);
+        });
+    },
     update(data) {
       const _this = this;
-      const width = 800;
-      const height = 400;
+      const width = 600;
+      const height = 300;
       const margin = { top: 20, right: 30, bottom: 30, left: 40 };
       const svg = d3
         .select("#bar")
@@ -74,10 +91,9 @@ export default {
         .range([0, width])
         .domain(data.map((d) => d.artist))
         .padding(0.2);
-      const y = d3
-        .scaleLinear()
-        .domain([0, d3.max(data, (d) => d.yVal)])
-        .range([height, 0]);
+      const yMax = d3.max(data, (d) => d.yVal);
+      const yMin = d3.min(data, (d) => d.yVal) - 0.05 * yMax;
+      const y = d3.scaleLinear().domain([yMin, yMax]).range([height, 0]);
       const tooltip = d3
         .select("body")
         .append("div")
@@ -122,8 +138,8 @@ export default {
         .attr("cursor", "pointer")
         .on("click", (event, d) => {
           console.log(event, d);
-          this.$router.push("/about");
           tooltip.html(``).style("visibility", "hidden");
+          this.handleBarClick(d);
         });
       rect
         .transition()

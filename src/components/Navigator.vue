@@ -1,15 +1,38 @@
 <script setup lang="ts">
 import * as d3 from "d3";
-import { ref } from "vue";
-import { DataLoader } from "../models/data";
-import { Artists } from "../models/artists";
+import { ref, watch } from "vue";
+import { DataLoader } from "@/stores/data";
+import { Artists } from "@/stores/artists";
+import { RouterLink } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
+
+const router = useRouter();
+const route = useRoute();
+
+const handleClick = (name: string) => {
+  router
+    .push({
+      name: "artist",
+      params: { id: name },
+    })
+    .then(() => {
+      console.log("Updated", route.params.id);
+    });
+};
+
+watch(
+  () => route.params.id,
+  () => {
+    console.log(route.params.id);
+  }
+);
 </script>
 
 <template>
   <a-list item-layout="horizontal" :data-source="Artists">
     <template #renderItem="{ item }">
-      <a-list-item>
-        <a-list-item-meta :description="item.description">
+      <a-list-item @click="handleClick(item.name)">
+        <a-list-item-meta>
           <template #title>
             {{ item.name }}
           </template>
