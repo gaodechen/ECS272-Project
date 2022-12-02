@@ -70,7 +70,8 @@ const selectSong = (index: number) => {
 
 .container {
   width: 100%;
-  /* display: flex; */
+  display: flex;
+  align-content: flex-start;
 }
 
 .selected {
@@ -80,11 +81,12 @@ const selectSong = (index: number) => {
 
 .left-container {
   width: 600px;
+  min-width: 600px;
   margin-left: 32px;
   /* height: 600px; */
   display: flex;
   justify-content: space-between;
-  align-content: center;
+  align-content: flex-start;
   flex-wrap: wrap;
 }
 
