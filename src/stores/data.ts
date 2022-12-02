@@ -7,8 +7,7 @@ export class DataLoader {
   static BooleanColumns = ["explicit"];
 
   parseCsv = (csvData: any) => {
-    this.csvData = csvData;
-    return csvData.forEach((d: any) => {
+    csvData.forEach((d: any) => {
       for (const column of csvData.columns) {
         if (DataLoader.BooleanColumns.includes(column)) {
           d[column] = d[column] == "True";
@@ -19,6 +18,7 @@ export class DataLoader {
         }
       }
     });
+    this.csvData = csvData;
   };
 
   groupBy = (groupBy: string) => {
@@ -67,18 +67,30 @@ export class DataLoader {
       this.sumBy("artist", "popularity"),
       ([artist, yVal]) => ({ artist, yVal })
     ).sort((a: any, b: any) => b.yVal - a.yVal);
-    
+
     const topArtist = array.slice(0, 10);
 
     console.log(array);
 
     const result = this.averageBy("artist", feature);
 
-    topArtist.map(item => {
+    topArtist.map((item) => {
       item.yVal = result.get(item.artist);
       console.log(item);
-    })
+    });
 
     return topArtist;
-  }
+  };
+
+  getRadarData = (artist: string, attributes: string[]) => {
+    const group = d3.filter(this.csvData, (d: any) => d.artist === artist);
+    const sumGroup = new Array();
+    for (const attribute of attributes) {
+      sumGroup.push({
+        axis: attribute,
+        value: d3.mean(group, (d: any) => d[attribute]) as number,
+      });
+    }
+    return Array.from(sumGroup);
+  };
 }
