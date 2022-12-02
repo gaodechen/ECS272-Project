@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import * as d3 from "d3";
-import { ref } from "vue";
+import { ref, watch, reactive } from "vue";
 import { DataLoader } from "../stores/data";
 import Navigator from "../components/Navigator.vue";
 import BarChart from "../components/BarChart.vue";
@@ -18,9 +18,17 @@ const route = useRoute();
 const dataLoader = ref<DataLoader>(new DataLoader());
 const dataExists = ref<Boolean>(false);
 
-const artist = Artists.find((artist) => artist.name === route.params.id);
+let artist: any = Artists.find((artist) => artist.name === route.params.id);
 
-console.log(artist)
+let selected = reactive([false, false, false, false,false, false,false, false,false]);
+
+watch(
+  () => route.params.id,
+  () => {
+    artist = Artists.find((artist) => artist.name === route.params.id);
+    selected = reactive([false, false, false, false,false, false,false, false,false]);
+  }
+);
 
 const loadCsv = () => {
   d3.csv("./data.csv").then((csvData) => {
@@ -30,12 +38,66 @@ const loadCsv = () => {
     }
   });
 };
+
+const selectSong = (index: number) => {
+  selected[index] = !selected[index];
+}
+
 </script>
 
 <template>
-  <h4>{{ artist?.name }}</h4>
-  <a-image width="100%" :src="artist?.banner"></a-image>
-  <RadarChart></RadarChart>
+  <div style="width: 100%; height: 100%;">
+    <img style="width: 100%; height: 200px;" :src="artist?.banner">
+    <h4 class="artist-title">{{ artist?.name }}</h4>
+    <div class="container">
+      <div class="left-container">
+        <div v-for="index in selected.length" :key="artist?.songs[index - 1]">
+          <img class="song-cover" v-bind:class="{selected: selected[index - 1]}" :src="artist?.covers[index - 1]" @click="selectSong(index - 1)">
+          <div class="song-name">{{artist?.songs[index - 1]}}</div>
+        </div>
+      </div>
+      <RadarChart></RadarChart>
+    </div>
+  </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.artist-title {
+  text-align: center;
+  margin: 0 16px;
+  font-size: 32px;
+}
+
+.container {
+  width: 100%;
+  /* display: flex; */
+}
+
+.selected {
+  opacity: 0.6;
+  border: hsla(160, 100%, 37%, 0.6) 2px solid;
+}
+
+.left-container {
+  width: 600px;
+  margin-left: 32px;
+  /* height: 600px; */
+  display: flex;
+  justify-content: space-between;
+  align-content: center;
+  flex-wrap: wrap;
+}
+
+.song-cover {
+  width: 160px;
+  height: 160px;
+  margin: 8px;
+  cursor: pointer;
+  border-radius: 12px;
+}
+
+.song-name {
+  text-align: center;
+  width: 160px;
+}
+</style>

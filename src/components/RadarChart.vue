@@ -1,5 +1,7 @@
 <template>
-  <div class="radarChart"></div>
+  <div style="display: flex; width: 100%">
+    <div id="radar"></div>
+  </div>
 </template>
 
 <script setup lang="ts">

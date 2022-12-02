@@ -4,8 +4,8 @@ import Navigator from "./components/Navigator.vue";
 </script>
 
 <template>
-  <a-layout>
-    <a-layout-sider width="200" style="background: #fff">
+  <a-layout style="height: 100%;">
+    <a-layout-sider width="255" style="background: #fff">
       <Navigator />
     </a-layout-sider>
     <RouterView />
@@ -16,6 +16,7 @@ import Navigator from "./components/Navigator.vue";
 #root,
 body,
 html {
+  width: 100%;
   height: 100%;
 }
 </style>

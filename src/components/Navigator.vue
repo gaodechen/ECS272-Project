@@ -1,4 +1,31 @@
-<script setup lang="ts">
+<template>
+  <a-menu
+    v-model:openKeys="openKeys"
+    v-model:selectedKeys="selectedKeys"
+    style="width: 256px"
+    mode="vertical"
+    @click="handleClick"
+  >
+    <a-sub-menu v-for="item in artists" :key="item.name">
+      <template #title>
+        <a-avatar :src="item.avatar" />
+        {{ item.name }}        
+      </template>
+      <a-menu-item v-for="song in item.songs" :key="item.name + '.' + song">
+        {{song}}
+      </a-menu-item>
+    </a-sub-menu>
+  </a-menu>
+</template>
+<script lang="ts">
+import { defineComponent, reactive, toRefs } from "vue";
+import {
+  MailOutlined,
+  CalendarOutlined,
+  AppstoreOutlined,
+  SettingOutlined,
+} from "@ant-design/icons-vue";
+import type { MenuProps } from "ant-design-vue";
 import * as d3 from "d3";
 import { ref, watch } from "vue";
 import { DataLoader } from "@/stores/data";
@@ -6,65 +33,41 @@ import { Artists } from "@/stores/artists";
 import { RouterLink } from "vue-router";
 import { useRouter, useRoute } from "vue-router";
 
-const router = useRouter();
-const route = useRoute();
-
-const handleClick = (name: string) => {
-  router
-    .push({
-      name: "artist",
-      params: { id: name },
-    })
-    .then(() => {
-      console.log("Updated", route.params.id);
+export default defineComponent({
+  components: {
+    MailOutlined,
+    CalendarOutlined,
+    AppstoreOutlined,
+    SettingOutlined,
+  },
+  data() {
+    return {
+      artists: Artists,
+    };
+  },
+  setup() {
+    const state = reactive({
+      selectedKeys: [],
+      openKeys: [],
     });
-};
-
-watch(
-  () => route.params.id,
-  () => {
-    console.log(route.params.id);
-  }
-);
+    const router = useRouter();
+    const route = useRoute();
+    const handleClick = (menuInfo: any) => {
+      console.log(menuInfo);
+      const name = menuInfo.key.split('.')[0];
+      router
+        .push({
+          name: "artist",
+          params: { id: name },
+        })
+        .then(() => {
+          console.log("Updated", route.params.id);
+        });
+    };
+    return {
+      ...toRefs(state),
+      handleClick,
+    };
+  },
+});
 </script>
-
-<template>
-  <a-list item-layout="horizontal" :data-source="Artists">
-    <template #renderItem="{ item }">
-      <a-list-item @click="handleClick(item.name)">
-        <a-list-item-meta>
-          <template #title>
-            {{ item.name }}
-          </template>
-          <template #avatar>
-            <a-avatar :src="item.avatar" />
-          </template>
-        </a-list-item-meta>
-      </a-list-item>
-    </template>
-  </a-list>
-</template>
-
-<style scoped>
-h1 {
-  font-weight: 500;
-  font-size: 2.6rem;
-  top: -10px;
-}
-
-h3 {
-  font-size: 1.2rem;
-}
-
-.greetings h1,
-.greetings h3 {
-  text-align: center;
-}
-
-@media (min-width: 1024px) {
-  .greetings h1,
-  .greetings h3 {
-    text-align: left;
-  }
-}
-</style>
