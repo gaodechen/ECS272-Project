@@ -27,9 +27,9 @@ const radarAttributes = [
 ];
 
 const svgId = ".radarChart";
-const margin = { top: 20, right: 20, bottom: 20, left: 20 };
-const windowWidth = 500;
-const windowHeight = 500;
+const margin = { top: 50, right: 20, bottom: 50, left: 20 };
+const windowWidth = 600;
+const windowHeight = 600;
 const renderWidth = windowWidth - margin.left - margin.right;
 const renderHeight = windowHeight - margin.top - margin.bottom;
 const levels = 5;
@@ -282,4 +282,7 @@ onMounted(() => {
 </script>
 
 <style>
+.radarChart {
+  width: 85%;
+}
 </style>
