@@ -1,22 +1,40 @@
 <script setup lang="ts">
 import * as d3 from "d3";
-import { ref, watch, reactive } from "vue";
+import { ref, watch, reactive, onMounted } from "vue";
 import { DataLoader } from "../stores/data";
-import Navigator from "../components/Navigator.vue";
-import BarChart from "../components/BarChart.vue";
 import RadarChart from "../components/RadarChart.vue";
-import {
-  UserOutlined,
-  LaptopOutlined,
-  NotificationOutlined,
-} from "@ant-design/icons-vue";
 
 import { useRoute } from "vue-router";
 import { Artists } from "@/stores/artists";
 
 const route = useRoute();
-const dataLoader = ref<DataLoader>(new DataLoader());
-const dataExists = ref<Boolean>(false);
+const dataLoader = new DataLoader();
+let dataExists = ref(false);
+let radarData: any = null;
+
+const radarAttributes = [
+  "popularity",
+  "liveness",
+  "energy",
+  "danceability",
+  "loudness",
+  "tempo",
+];
+
+onMounted(() => {
+  d3.csv("../data.csv").then((csvData) => {
+    dataLoader.parseCsv(csvData);
+    const selectedSongs = artist.songs.filter(
+      (_: any, index: number) => selected[index]
+    );
+    radarData = dataLoader.getRadarData(
+      route.params.id as string,
+      selectedSongs,
+      radarAttributes
+    );
+    dataExists = ref(true);
+  });
+});
 
 let artist: any = Artists.find((artist) => artist.name === route.params.id);
 
@@ -47,20 +65,16 @@ watch(
       false,
       false,
     ]);
+    radarData = dataLoader.getRadarData(
+      route.params.id as string,
+      artist.songs,
+      radarAttributes
+    );
   }
 );
 
 const selectSong = (index: number) => {
   selected[index] = !selected[index];
-};
-
-const loadCsv = () => {
-  d3.csv("./data.csv").then((csvData) => {
-    if (!dataExists.value) {
-      dataLoader.value.parseCsv(csvData);
-      dataExists.value = true;
-    }
-  });
 };
 </script>
 
@@ -88,7 +102,11 @@ const loadCsv = () => {
           <div class="song-name">{{ artist?.songs[index - 1] }}</div>
         </div>
       </div>
-      <RadarChart :artist="route.params.id"></RadarChart>
+      <RadarChart
+        :data="radarData"
+        :radar-axis="radarAttributes"
+        v-if="dataExists"
+      ></RadarChart>
     </div>
   </div>
 </template>
@@ -113,8 +131,8 @@ const loadCsv = () => {
 }
 
 .left-container {
-  width: 600px;
-  min-width: 600px;
+  width: 500px;
+  min-width: 500px;
   margin-left: 32px;
   /* height: 600px; */
   display: flex;
@@ -124,9 +142,9 @@ const loadCsv = () => {
 }
 
 .song-cover {
-  width: 160px;
-  height: 160px;
-  margin: 8px;
+  width: 140px;
+  height: 140px;
+  margin: 6px;
   cursor: pointer;
   border-radius: 12px;
 }

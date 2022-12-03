@@ -4,27 +4,20 @@
 
 <script setup lang="ts">
 import * as d3 from "d3";
-import { onMounted } from "vue";
+import { onMounted, watch } from "vue";
 import { DataLoader } from "@/stores/data";
 import Scheme from "@/assets/scheme";
 
 const props = defineProps({
-  artist: {
-    type: String,
+  data: {
+    type: Array<any>,
+    required: true,
+  },
+  radarAxis: {
+    type: Array<String>,
+    required: true,
   },
 });
-
-const dataLoader = new DataLoader();
-let data: any;
-
-const radarAttributes = [
-  "popularity",
-  "liveness",
-  "energy",
-  "danceability",
-  "loudness",
-  "tempo",
-];
 
 const svgId = ".radarChart";
 const margin = { top: 50, right: 20, bottom: 50, left: 20 };
@@ -32,10 +25,8 @@ const windowWidth = 600;
 const windowHeight = 600;
 const renderWidth = windowWidth - margin.left - margin.right;
 const renderHeight = windowHeight - margin.top - margin.bottom;
-const levels = 5;
-const radarAxis = radarAttributes;
-const numAxis = radarAxis.length;
-const anglePerSection = (Math.PI * 2) / numAxis;
+const numBlobs = 5;
+const anglePerSection = (Math.PI * 2) / props.radarAxis.length;
 const percentFormat = d3.format(".0%");
 const outerCircleValue = 1;
 const radius = Math.min(renderWidth / 2, renderHeight / 2);
@@ -73,7 +64,7 @@ const setupRadar = () => {
         ")"
     );
 
-  const backgroundRadar = radarAxis.map((axis) => {
+  const backgroundRadar = props.radarAxis.map((axis) => {
     return { axis: axis, value: 1 };
   });
   g.selectAll("path.radarBackground")
@@ -127,33 +118,33 @@ const setupRadar = () => {
 
   axisGrid
     .selectAll(".levels")
-    .data(d3.range(1, levels + 1).reverse())
+    .data(d3.range(1, numBlobs + 1).reverse())
     .enter()
     .append("circle")
     .attr("class", "gridCircle")
-    .attr("r", (d) => (radius / levels) * d)
+    .attr("r", (d) => (radius / numBlobs) * d)
     .style("fill", strokeTransitions[0])
     .style("stroke", strokeTransitions[1])
     .style("fill-opacity", 0.1);
 
   axisGrid
     .selectAll(".axisLabel")
-    .data(d3.range(1, levels + 1).reverse())
+    .data(d3.range(1, numBlobs + 1).reverse())
     .enter()
     .append("text")
     .attr("class", "axisLabel")
     .attr("x", 4)
     .attr("y", function (d) {
-      return (-d * radius) / levels;
+      return (-d * radius) / numBlobs;
     })
     .attr("dy", "0.4em")
     .style("font-size", "10px")
     .attr("fill", strokeTransitions[2])
-    .text((d) => percentFormat((outerCircleValue * d) / levels));
+    .text((d) => percentFormat((outerCircleValue * d) / numBlobs));
 
   const axis = axisGrid
     .selectAll(".axis")
-    .data(radarAxis)
+    .data(props.radarAxis)
     .enter()
     .append("g")
     .attr("class", "axis");
@@ -271,14 +262,9 @@ const drawRadar = (data: any) => {
 };
 
 onMounted(() => {
-  d3.csv("../data.csv").then((csvData) => {
-    dataLoader.parseCsv(csvData);
-    data = dataLoader.getRadarData(props.artist, radarAttributes);
-    setupRadar();
-    drawRadar(data);
-  });
+  setupRadar();
+  drawRadar(props.data);
 });
-
 </script>
 
 <style>
