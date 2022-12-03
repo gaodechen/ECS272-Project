@@ -9,7 +9,7 @@
           </a-menu-item>
         </a-menu>
       </template>
-      <a-button>
+      <a-button id="bar-button">
         {{ feature }}
         <DownOutlined />
       </a-button>
@@ -25,6 +25,7 @@ import {
   UserOutlined,
   LaptopOutlined,
   NotificationOutlined,
+  DownOutlined
 } from "@ant-design/icons-vue";
 
 export default {
@@ -80,8 +81,9 @@ export default {
       const svg = d3
         .select("#bar")
         .append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
+        .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
+        .attr("width", "100%")
+        .attr("height", "100%")
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
       const staticColor = "hsla(160, 100%, 37%, 1)";
@@ -92,7 +94,7 @@ export default {
         .domain(data.map((d) => d.artist))
         .padding(0.2);
       const yMax = d3.max(data, (d) => d.yVal);
-      const yMin = d3.min(data, (d) => d.yVal) - 0.05 * yMax;
+      const yMin = d3.min(data, (d) => d.yVal) - 0.05*yMax;
       const y = d3.scaleLinear().domain([yMin, yMax]).range([height, 0]);
       const tooltip = d3
         .select("body")
@@ -105,7 +107,6 @@ export default {
         .style("background", "rgba(0,0,0,0.6)")
         .style("border-radius", "4px")
         .style("color", "#fff")
-        .text("a simple tooltip");
       const rect = svg
         .selectAll("g")
         .data(data)
@@ -159,3 +160,22 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+#bar-button {
+  position: absolute;
+  top: 100px;
+  left: 40px;
+  z-index: 999;
+}
+
+#bar {
+  width: 50%;
+  position: relative;
+  /* margin-top: 100px; */
+  margin-right: 150px;
+}
+
+
+</style>
+
