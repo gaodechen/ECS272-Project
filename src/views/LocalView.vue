@@ -1,62 +1,112 @@
 <script setup lang="ts">
 import * as d3 from "d3";
-import { ref, watch, reactive } from "vue";
+import { ref, watch, reactive, onMounted } from "vue";
 import { DataLoader } from "../stores/data";
-import Navigator from "../components/Navigator.vue";
-import BarChart from "../components/BarChart.vue";
 import RadarChart from "../components/RadarChart.vue";
-import {
-  UserOutlined,
-  LaptopOutlined,
-  NotificationOutlined,
-} from "@ant-design/icons-vue";
 
 import { useRoute } from "vue-router";
 import { Artists } from "@/stores/artists";
 
 const route = useRoute();
-const dataLoader = ref<DataLoader>(new DataLoader());
-const dataExists = ref<Boolean>(false);
+const dataLoader = new DataLoader();
+let dataExists = ref(false);
+let radarData: any = null;
+
+const radarAttributes = [
+  "popularity",
+  "liveness",
+  "energy",
+  "danceability",
+  "loudness",
+  "tempo",
+];
+
+onMounted(() => {
+  d3.csv("../data.csv").then((csvData) => {
+    dataLoader.parseCsv(csvData);
+    const selectedSongs = artist.songs.filter(
+      (_: any, index: number) => selected[index]
+    );
+    radarData = dataLoader.getRadarData(
+      route.params.id as string,
+      selectedSongs,
+      radarAttributes
+    );
+    dataExists = ref(true);
+  });
+});
 
 let artist: any = Artists.find((artist) => artist.name === route.params.id);
 
-let selected = reactive([false, false, false, false,false, false,false, false,false]);
+let selected = reactive([
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+]);
 
 watch(
   () => route.params.id,
   () => {
     artist = Artists.find((artist) => artist.name === route.params.id);
-    selected = reactive([false, false, false, false,false, false,false, false,false]);
+    selected = reactive([
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]);
+    radarData = dataLoader.getRadarData(
+      route.params.id as string,
+      artist.songs,
+      radarAttributes
+    );
   }
 );
 
-const loadCsv = () => {
-  d3.csv("./data.csv").then((csvData) => {
-    if (!dataExists.value) {
-      dataLoader.value.parseCsv(csvData);
-      dataExists.value = true;
-    }
-  });
-};
-
 const selectSong = (index: number) => {
   selected[index] = !selected[index];
-}
-
+};
 </script>
 
 <template>
-  <div style="width: 100%; height: 100%;">
-    <img style="width: 100%; height: 200px;" :src="artist?.banner">
-    <h4 class="artist-title">{{ artist?.name }}</h4>
+  <div style="width: 100%; height: 100%">
+    <div
+      class="bg-image"
+      :style="{
+        backgroundImage: `linear-gradient(to bottom, rgba(245, 246, 252, 0.52), rgba(117, 19, 93, 0.73)), url(${artist.banner})`,
+      }"
+    >
+      <div class="bg-title">
+        {{ artist?.name }}
+      </div>
+    </div>
     <div class="container">
       <div class="left-container">
         <div v-for="index in selected.length" :key="artist?.songs[index - 1]">
-          <img class="song-cover" v-bind:class="{selected: selected[index - 1]}" :src="artist?.covers[index - 1]" @click="selectSong(index - 1)">
-          <div class="song-name">{{artist?.songs[index - 1]}}</div>
+          <img
+            class="song-cover"
+            v-bind:class="{ selected: selected[index - 1] }"
+            :src="artist?.covers[index - 1]"
+            @click="selectSong(index - 1)"
+          />
+          <div class="song-name">{{ artist?.songs[index - 1] }}</div>
         </div>
       </div>
-      <RadarChart></RadarChart>
+      <RadarChart
+        :data="radarData"
+        :radar-axis="radarAttributes"
+        v-if="dataExists"
+      ></RadarChart>
     </div>
   </div>
 </template>
@@ -71,7 +121,8 @@ const selectSong = (index: number) => {
 .container {
   width: 100%;
   display: flex;
-  align-content: flex-start;
+  justify-self: center;
+  align-items: center;
 }
 
 .selected {
@@ -80,8 +131,8 @@ const selectSong = (index: number) => {
 }
 
 .left-container {
-  width: 600px;
-  min-width: 600px;
+  width: 500px;
+  min-width: 500px;
   margin-left: 32px;
   /* height: 600px; */
   display: flex;
@@ -91,9 +142,9 @@ const selectSong = (index: number) => {
 }
 
 .song-cover {
-  width: 160px;
-  height: 160px;
-  margin: 8px;
+  width: 140px;
+  height: 140px;
+  margin: 6px;
   cursor: pointer;
   border-radius: 12px;
 }
@@ -101,5 +152,14 @@ const selectSong = (index: number) => {
 .song-name {
   text-align: center;
   width: 160px;
+}
+
+.bg-image {
+  width: 100%;
+  height: 350px;
+  background-size: cover;
+  color: white;
+  padding: 20px;
+  font-size: 50pt;
 }
 </style>

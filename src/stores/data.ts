@@ -2,6 +2,7 @@ import * as d3 from "d3";
 
 export class DataLoader {
   private csvData: any = null;
+  private csvNorm: any = null;
   static StringColumns = ["artist", "genre", "song"];
   static IntegerColumns = ["duration_ms", "key", "mode", "popularity", "year"];
   static BooleanColumns = ["explicit"];
@@ -18,7 +19,23 @@ export class DataLoader {
         }
       }
     });
+    const csvNorm = structuredClone(csvData);
+    for (const column of csvNorm.columns) {
+      if (
+        !DataLoader.BooleanColumns.includes(column) &&
+        !DataLoader.StringColumns.includes(column)
+      ) {
+        const [vMax, vMin] = [
+          d3.max(csvNorm, (d) => d[column]),
+          d3.min(csvNorm, (d) => d[column]),
+        ];
+        csvNorm.forEach((d: any) => {
+          d[column] = (d[column] - vMin) / (vMax - vMin);
+        });
+      }
+    }
     this.csvData = csvData;
+    this.csvNorm = csvNorm;
   };
 
   groupBy = (groupBy: string) => {
@@ -82,8 +99,9 @@ export class DataLoader {
     return topArtist;
   };
 
-  getRadarData = (artist: string, attributes: string[]) => {
-    const group = d3.filter(this.csvData, (d: any) => d.artist === artist);
+  getRadarData = (artist: string, songs: string[], attributes: string[]) => {
+    const csvData = this.csvNorm;
+    const group = d3.filter(csvData, (d: any) => d.artist === artist);
     const sumGroup = new Array();
     for (const attribute of attributes) {
       sumGroup.push({
@@ -91,6 +109,7 @@ export class DataLoader {
         value: d3.mean(group, (d: any) => d[attribute]) as number,
       });
     }
+    console.log(sumGroup);
     return Array.from(sumGroup);
   };
 }

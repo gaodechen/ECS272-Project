@@ -8,15 +8,16 @@
   >
     <a-sub-menu v-for="item in artists" :key="item.name">
       <template #title>
-        <a-avatar :src="item.avatar" />
-        {{ item.name }}        
+        <a-avatar :src="item.avatar" size="large" />
+        {{ item.name }}
       </template>
       <a-menu-item v-for="song in item.songs" :key="item.name + '.' + song">
-        {{song}}
+        {{ song }}
       </a-menu-item>
     </a-sub-menu>
   </a-menu>
 </template>
+
 <script lang="ts">
 import { defineComponent, reactive, toRefs } from "vue";
 import {
@@ -54,7 +55,7 @@ export default defineComponent({
     const route = useRoute();
     const handleClick = (menuInfo: any) => {
       console.log(menuInfo);
-      const name = menuInfo.key.split('.')[0];
+      const name = menuInfo.key.split(".")[0];
       router
         .push({
           name: "artist",
@@ -71,3 +72,6 @@ export default defineComponent({
   },
 });
 </script>
+
+<style scoped>
+</style>
