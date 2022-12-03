@@ -19,8 +19,8 @@
 
 <script lang="ts">
 import * as d3 from "d3";
-import { DataLoader } from "../stores/data";
-import { trimName } from "../stores/artists";
+import { DataLoader } from "@/stores/data";
+import Scheme from '@/assets/scheme'
 import {
   UserOutlined,
   LaptopOutlined,
@@ -115,6 +115,7 @@ export default {
         .attr("x", (d, i) => x(d.artist))
         .attr("width", x.bandwidth())
         .attr("y", (d) => y(0))
+        .style("fill", (_, i) => Scheme.Themes[i])
         .attr("height", (d) => height - y(0))
         .on("mouseover", function (event, d) {
           tooltip

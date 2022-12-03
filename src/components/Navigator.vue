@@ -52,18 +52,14 @@ export default defineComponent({
       openKeys: [],
     });
     const router = useRouter();
-    const route = useRoute();
     const handleClick = (menuInfo: any) => {
-      console.log(menuInfo);
       const name = menuInfo.key.split(".")[0];
       router
         .push({
           name: "artist",
           params: { id: name },
         })
-        .then(() => {
-          console.log("Updated", route.params.id);
-        });
+        .then(() => {});
     };
     return {
       ...toRefs(state),

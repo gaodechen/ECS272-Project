@@ -87,13 +87,10 @@ export class DataLoader {
 
     const topArtist = array.slice(0, 10);
 
-    console.log(array);
-
     const result = this.averageBy("artist", feature);
 
     topArtist.map((item) => {
       item.yVal = result.get(item.artist);
-      console.log(item);
     });
 
     return topArtist;
@@ -101,15 +98,19 @@ export class DataLoader {
 
   getRadarData = (artist: string, songs: string[], attributes: string[]) => {
     const csvData = this.csvNorm;
-    const group = d3.filter(csvData, (d: any) => d.artist === artist);
-    const sumGroup = new Array();
+    const group = d3.filter(csvData, (d: any) => {
+      return (
+        d.artist === artist &&
+        (songs.length === 0 || (songs.length > 0 && songs.includes(d.song)))
+      );
+    });
+    const sumGroup = [];
     for (const attribute of attributes) {
       sumGroup.push({
         axis: attribute,
         value: d3.mean(group, (d: any) => d[attribute]) as number,
       });
     }
-    console.log(sumGroup);
-    return Array.from(sumGroup);
+    return sumGroup;
   };
 }

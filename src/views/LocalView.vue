@@ -10,7 +10,6 @@ import { Artists } from "@/stores/artists";
 const route = useRoute();
 const dataLoader = new DataLoader();
 let dataExists = ref(false);
-let radarData: any = null;
 
 const radarAttributes = [
   "popularity",
@@ -21,13 +20,19 @@ const radarAttributes = [
   "tempo",
 ];
 
+let artist: any = Artists.find((artist) => artist.name === route.params.id);
+let state = reactive({
+  selected: Array<Boolean>(artist.songs.length).fill(false),
+  radarData: Array<{ axis: string; value: number }>(),
+});
+
 onMounted(() => {
   d3.csv("../data.csv").then((csvData) => {
     dataLoader.parseCsv(csvData);
     const selectedSongs = artist.songs.filter(
-      (_: any, index: number) => selected[index]
+      (_: any, index: number) => state.selected[index]
     );
-    radarData = dataLoader.getRadarData(
+    state.radarData = dataLoader.getRadarData(
       route.params.id as string,
       selectedSongs,
       radarAttributes
@@ -36,45 +41,28 @@ onMounted(() => {
   });
 });
 
-let artist: any = Artists.find((artist) => artist.name === route.params.id);
-
-let selected = reactive([
-  false,
-  false,
-  false,
-  false,
-  false,
-  false,
-  false,
-  false,
-  false,
-]);
-
 watch(
   () => route.params.id,
   () => {
     artist = Artists.find((artist) => artist.name === route.params.id);
-    selected = reactive([
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-    ]);
-    radarData = dataLoader.getRadarData(
+    state.selected = Array<Boolean>(artist.songs.length).fill(false);
+    state.radarData = dataLoader.getRadarData(
       route.params.id as string,
-      artist.songs,
+      [],
       radarAttributes
     );
   }
 );
 
+watch(
+  () => dataExists,
+  () => {
+    console.log("Data loaded");
+  }
+);
+
 const selectSong = (index: number) => {
-  selected[index] = !selected[index];
+  state.selected[index] = !state.selected[index];
 };
 </script>
 
@@ -92,10 +80,13 @@ const selectSong = (index: number) => {
     </div>
     <div class="container">
       <div class="left-container">
-        <div v-for="index in selected.length" :key="artist?.songs[index - 1]">
+        <div
+          v-for="index in state.selected.length"
+          :key="artist?.songs[index - 1]"
+        >
           <img
             class="song-cover"
-            v-bind:class="{ selected: selected[index - 1] }"
+            v-bind:class="{ selected: state.selected[index - 1] }"
             :src="artist?.covers[index - 1]"
             @click="selectSong(index - 1)"
           />
@@ -103,7 +94,7 @@ const selectSong = (index: number) => {
         </div>
       </div>
       <RadarChart
-        :data="radarData"
+        :data="state.radarData"
         :radar-axis="radarAttributes"
         v-if="dataExists"
       ></RadarChart>
