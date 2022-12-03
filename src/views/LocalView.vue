@@ -20,15 +20,39 @@ const dataExists = ref<Boolean>(false);
 
 let artist: any = Artists.find((artist) => artist.name === route.params.id);
 
-let selected = reactive([false, false, false, false,false, false,false, false,false]);
+let selected = reactive([
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+]);
 
 watch(
   () => route.params.id,
   () => {
     artist = Artists.find((artist) => artist.name === route.params.id);
-    selected = reactive([false, false, false, false,false, false,false, false,false]);
+    selected = reactive([
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]);
   }
 );
+
+const selectSong = (index: number) => {
+  selected[index] = !selected[index];
+};
 
 const loadCsv = () => {
   d3.csv("./data.csv").then((csvData) => {
@@ -38,25 +62,33 @@ const loadCsv = () => {
     }
   });
 };
-
-const selectSong = (index: number) => {
-  selected[index] = !selected[index];
-}
-
 </script>
 
 <template>
-  <div style="width: 100%; height: 100%;">
-    <img style="width: 100%; height: 200px;" :src="artist?.banner">
-    <h4 class="artist-title">{{ artist?.name }}</h4>
+  <div style="width: 100%; height: 100%">
+    <div
+      class="bg-image"
+      :style="{
+        backgroundImage: `linear-gradient(to bottom, rgba(245, 246, 252, 0.52), rgba(117, 19, 93, 0.73)), url(${artist.banner})`,
+      }"
+    >
+      <div class="bg-title">
+        {{ artist?.name }}
+      </div>
+    </div>
     <div class="container">
       <div class="left-container">
         <div v-for="index in selected.length" :key="artist?.songs[index - 1]">
-          <img class="song-cover" v-bind:class="{selected: selected[index - 1]}" :src="artist?.covers[index - 1]" @click="selectSong(index - 1)">
-          <div class="song-name">{{artist?.songs[index - 1]}}</div>
+          <img
+            class="song-cover"
+            v-bind:class="{ selected: selected[index - 1] }"
+            :src="artist?.covers[index - 1]"
+            @click="selectSong(index - 1)"
+          />
+          <div class="song-name">{{ artist?.songs[index - 1] }}</div>
         </div>
       </div>
-      <RadarChart></RadarChart>
+      <RadarChart :artist="route.params.id"></RadarChart>
     </div>
   </div>
 </template>
@@ -71,7 +103,8 @@ const selectSong = (index: number) => {
 .container {
   width: 100%;
   display: flex;
-  align-content: flex-start;
+  justify-self: center;
+  align-items: center;
 }
 
 .selected {
@@ -101,5 +134,14 @@ const selectSong = (index: number) => {
 .song-name {
   text-align: center;
   width: 160px;
+}
+
+.bg-image {
+  width: 100%;
+  height: 350px;
+  background-size: cover;
+  color: white;
+  padding: 20px;
+  font-size: 50pt;
 }
 </style>

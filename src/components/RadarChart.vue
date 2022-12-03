@@ -1,5 +1,5 @@
 <template>
-  <div class="radarChart"></div>
+  <div class="radarChart" width="100%"></div>
 </template>
 
 <script setup lang="ts">
@@ -28,8 +28,8 @@ const radarAttributes = [
 
 const svgId = ".radarChart";
 const margin = { top: 20, right: 20, bottom: 20, left: 20 };
-const windowWidth = 700;
-const windowHeight = 700;
+const windowWidth = 500;
+const windowHeight = 500;
 const renderWidth = windowWidth - margin.left - margin.right;
 const renderHeight = windowHeight - margin.top - margin.bottom;
 const levels = 5;
@@ -59,7 +59,7 @@ const setupRadar = () => {
     .attr("viewBox", `0 0 ${windowWidth} ${windowHeight}`)
     .attr("width", "100%")
     .attr("height", "100%")
-    .attr("class", svgId + "Class");
+    .attr("class", "radarClass");
 
   const g = svg
     .append("g")
@@ -282,8 +282,4 @@ onMounted(() => {
 </script>
 
 <style>
-.radarChart {
-  width: 100%;
-  height: 100%;
-}
 </style>
