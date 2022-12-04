@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import * as d3 from "d3";
-import { ref, watch, reactive, onMounted } from "vue";
+import { watch, reactive, render } from "vue";
 import { DataLoader } from "../stores/data";
 import RadarChart from "../components/RadarChart.vue";
 
@@ -9,7 +9,12 @@ import { Artists } from "@/stores/artists";
 
 const route = useRoute();
 const dataLoader = new DataLoader();
-let dataExists = ref(false);
+let artist: any = Artists.find((artist) => artist.name === route.params.id);
+let state = reactive({
+  selected: Array<Boolean>(artist.songs.length).fill(false),
+  radarData: Array<{ axis: string; value: number }>(),
+  dataExists: false,
+});
 
 const radarAttributes = [
   "popularity",
@@ -20,25 +25,17 @@ const radarAttributes = [
   "tempo",
 ];
 
-let artist: any = Artists.find((artist) => artist.name === route.params.id);
-let state = reactive({
-  selected: Array<Boolean>(artist.songs.length).fill(false),
-  radarData: Array<{ axis: string; value: number }>(),
-});
-
-onMounted(() => {
-  d3.csv("../data.csv").then((csvData) => {
-    dataLoader.parseCsv(csvData);
-    const selectedSongs = artist.songs.filter(
-      (_: any, index: number) => state.selected[index]
-    );
-    state.radarData = dataLoader.getRadarData(
-      route.params.id as string,
-      selectedSongs,
-      radarAttributes
-    );
-    dataExists = ref(true);
-  });
+d3.csv("../data.csv").then((csvData) => {
+  dataLoader.parseCsv(csvData);
+  const selectedSongs = artist.songs.filter(
+    (_: any, index: number) => state.selected[index]
+  );
+  state.radarData = dataLoader.getRadarData(
+    route.params.id as string,
+    selectedSongs,
+    radarAttributes
+  );
+  state.dataExists = true;
 });
 
 watch(
@@ -54,15 +51,13 @@ watch(
   }
 );
 
-watch(
-  () => dataExists,
-  () => {
-    console.log("Data loaded");
-  }
-);
-
 const selectSong = (index: number) => {
   state.selected[index] = !state.selected[index];
+  state.radarData = dataLoader.getRadarData(
+    route.params.id as string,
+    artist.songs.filter((_: any, index: number) => state.selected[index]),
+    radarAttributes
+  );
 };
 </script>
 
@@ -96,7 +91,7 @@ const selectSong = (index: number) => {
       <RadarChart
         :data="state.radarData"
         :radar-axis="radarAttributes"
-        v-if="dataExists"
+        v-if="state.dataExists"
       ></RadarChart>
     </div>
   </div>

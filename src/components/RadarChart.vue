@@ -5,8 +5,16 @@
 <script setup lang="ts">
 import * as d3 from "d3";
 import { onMounted, watch } from "vue";
-import { DataLoader } from "@/stores/data";
 import Scheme from "@/assets/scheme";
+
+const AxisTransition = {
+  popularity: Scheme.Transitions.Volcano,
+  liveness: Scheme.Transitions.Magenta,
+  energy: Scheme.Transitions.Blue,
+  danceability: Scheme.Transitions.Purple,
+  loudness: Scheme.Transitions.Cyan,
+  tempo: Scheme.Transitions.Grey,
+}
 
 const props = defineProps({
   data: {
@@ -17,6 +25,10 @@ const props = defineProps({
     type: Array<String>,
     required: true,
   },
+});
+
+watch(props, () => {
+  drawRadar(props.data);
 });
 
 const svgId = ".radarChart";
@@ -30,7 +42,6 @@ const anglePerSection = (Math.PI * 2) / props.radarAxis.length;
 const percentFormat = d3.format(".0%");
 const outerCircleValue = 1;
 const radius = Math.min(renderWidth / 2, renderHeight / 2);
-
 const rScale = d3
   .scaleLinear()
   .range([0, radius])
@@ -41,7 +52,6 @@ const radarLine = d3
   .curve(d3.curveLinearClosed)
   .radius((d: any) => rScale(d.value))
   .angle((_, i) => i * anglePerSection);
-
 const setupRadar = () => {
   d3.select(`${svgId}`).select("svg").remove();
   const svg = d3
@@ -51,7 +61,6 @@ const setupRadar = () => {
     .attr("width", "100%")
     .attr("height", "100%")
     .attr("class", "radarClass");
-
   const g = svg
     .append("g")
     .attr("class", "canvas")
@@ -63,7 +72,6 @@ const setupRadar = () => {
         (renderHeight / 2 + margin.top) +
         ")"
     );
-
   const backgroundRadar = props.radarAxis.map((axis) => {
     return { axis: axis, value: 1 };
   });
@@ -86,36 +94,8 @@ const setupRadar = () => {
     .append("path")
     .attr("d", radarLine(backgroundRadar));
 
-  const defs = g.append("defs");
-  const colorTransitions = Scheme.Transitions.Lime;
-  const strokeTransitions = Scheme.Transitions.Grey;
-  const backgroundGradient = defs
-    .append("radialGradient")
-    .attr("id", "radar-gradient")
-    .attr("cx", "0.5")
-    .attr("cy", "0.5")
-    .attr("r", "0.5")
-    .attr("fx", "0.5")
-    .attr("fy", "0.5");
-  backgroundGradient
-    .append("stop")
-    .attr("stop-color", colorTransitions[0])
-    .attr("offset", "10%");
-  backgroundGradient
-    .append("stop")
-    .attr("stop-color", colorTransitions[1])
-    .attr("offset", "30%");
-  backgroundGradient
-    .append("stop")
-    .attr("stop-color", colorTransitions[2])
-    .attr("offset", "65%");
-  backgroundGradient
-    .append("stop")
-    .attr("stop-color", colorTransitions[3])
-    .attr("offset", "85%");
-
   const axisGrid = g.append("g").attr("class", "axisWrapper");
-
+  const strokeTransitions = Scheme.Transitions.Grey;
   axisGrid
     .selectAll(".levels")
     .data(d3.range(1, numBlobs + 1).reverse())
@@ -126,7 +106,6 @@ const setupRadar = () => {
     .style("fill", strokeTransitions[0])
     .style("stroke", strokeTransitions[1])
     .style("fill-opacity", 0.1);
-
   axisGrid
     .selectAll(".axisLabel")
     .data(d3.range(1, numBlobs + 1).reverse())
@@ -141,7 +120,6 @@ const setupRadar = () => {
     .style("font-size", "10px")
     .attr("fill", strokeTransitions[2])
     .text((d) => percentFormat((outerCircleValue * d) / numBlobs));
-
   const axis = axisGrid
     .selectAll(".axis")
     .data(props.radarAxis)
@@ -167,7 +145,6 @@ const setupRadar = () => {
     .attr("class", "line")
     .style("stroke", "white")
     .style("stroke-width", "2px");
-
   axis
     .append("text")
     .attr("class", "legend")
@@ -194,10 +171,42 @@ const setupRadar = () => {
 const drawRadar = (data: any) => {
   const svg = d3.select(`${svgId}`).select("svg");
   const g = svg.select("g.canvas");
-  const defs = g.select("defs.radar-clip");
+  const radarDefs = g.select("defs.radar-clip");
+  const bgDefs = g.select("defs");
+
+  const maxAxis = data.reduce((prev: any, cur: any) =>
+    prev.value > cur.value ? prev : cur
+  );
+  svg.selectAll("#radar-gradient").remove();
+  const colorTransitions = AxisTransition[maxAxis.axis];
+  const backgroundGradient = bgDefs
+    .append("radialGradient")
+    .attr("id", "radar-gradient")
+    .attr("cx", "0.5")
+    .attr("cy", "0.5")
+    .attr("r", "0.5")
+    .attr("fx", "0.5")
+    .attr("fy", "0.5");
+  backgroundGradient
+    .append("stop")
+    .attr("stop-color", colorTransitions[0])
+    .attr("offset", "10%");
+  backgroundGradient
+    .append("stop")
+    .attr("stop-color", colorTransitions[1])
+    .attr("offset", "30%");
+  backgroundGradient
+    .append("stop")
+    .attr("stop-color", colorTransitions[2])
+    .attr("offset", "65%");
+  backgroundGradient
+    .append("stop")
+    .attr("stop-color", colorTransitions[3])
+    .attr("offset", "85%");
+
   const transitionDuration = 300;
-  const transitionEffect = d3.easeCircle;
-  defs
+  const transitionEffect = d3.easeBounceOut;
+  radarDefs
     .selectAll("clipPath.radarArea")
     .data([data])
     .join(
@@ -219,7 +228,6 @@ const drawRadar = (data: any) => {
           .selection(),
       (exit) => exit.remove()
     );
-
   const blobCircleWrapper = g
     .selectAll(".radarCircleWrapper")
     .data(data)
@@ -227,8 +235,7 @@ const drawRadar = (data: any) => {
     .append("g")
     .attr("class", "radarCircleWrapper");
 
-  let tooltip = g.append("text").attr("class", "tooltip").style("opacity", 0);
-
+  let tooltip = g.append("text").attr("class", "tooltip").style("opacity", 0.5);
   blobCircleWrapper
     .selectAll(".radarInvisibleCircle")
     .data((d) => d)
@@ -247,7 +254,6 @@ const drawRadar = (data: any) => {
     .on("mouseover", (d) => {
       const newX = parseFloat(d3.select(this).attr("cx")) - 10;
       const newY = parseFloat(d3.select(this).attr("cy")) - 10;
-
       tooltip
         .attr("x", newX)
         .attr("y", newY)
@@ -260,7 +266,6 @@ const drawRadar = (data: any) => {
       tooltip.transition().duration(200).style("opacity", 0);
     });
 };
-
 onMounted(() => {
   setupRadar();
   drawRadar(props.data);
