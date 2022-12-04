@@ -1,44 +1,40 @@
 <script setup lang="ts">
-import * as d3 from "d3";
-import { ref } from "vue";
-import { DataLoader } from "../stores/data";
 import BarChart from "../components/BarChart.vue";
 import ChordChart from "../components/ChordChart.vue";
-
-const dataLoader = ref<DataLoader>(new DataLoader());
-const dataExists = ref<Boolean>(false);
-
-const loadCsv = () => {
-  d3.csv("./data.csv").then((csvData) => {
-    if (!dataExists.value) {
-      dataLoader.value.parseCsv(csvData);
-      dataExists.value = true;
-    }
-  });
-};
 </script>
 
 <template>
-  <a-layout>
-    <a-layout-header class="global-header">Spotify Top Hits</a-layout-header>
+  <a-layout class="global-container">
+    <div class="global-header">
+      <div class="global-header-title">Spotify Top Hits</div>
+    </div>
     <a-layout-content>
-      <div class="global-container">
+      <div class="chart-container">
         <ChordChart></ChordChart>
-        <BarChart></BarChart></div
-    ></a-layout-content>
+        <BarChart></BarChart>
+      </div>
+    </a-layout-content>
   </a-layout>
 </template>
 
 <style scoped>
 .global-header {
   height: 128px;
-  background: #e5e5e5;
-  color: #000;
   text-align: center;
   font-size: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: rgb(255, 255, 255);
 }
-.global-container {
+
+.chart-container {
   display: flex;
   justify-content: space-evenly;
+}
+
+.global-container {
+  background-color: #ffdee9;
+  background-image: linear-gradient(0deg, #ffdee9 0%, #b5fffc 100%);
 }
 </style>

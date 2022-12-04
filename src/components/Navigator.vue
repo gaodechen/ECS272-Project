@@ -2,9 +2,9 @@
   <a-menu
     v-model:openKeys="openKeys"
     v-model:selectedKeys="selectedKeys"
-    style="width: 256px"
     mode="vertical"
     @click="handleClick"
+    class="menu"
   >
     <div class="logo" @click="handleBackToHome"></div>
     <a-sub-menu v-for="item in artists" :key="item.name">
@@ -12,7 +12,7 @@
         <a-avatar :src="item.avatar" size="large" />
         {{ item.name }}
       </template>
-      <a-menu-item v-for="song in item.songs" :key="item.name + '.' + song">
+      <a-menu-item v-for="song in item.songs" :key="item.name + '.' + song" class="men-item">
         {{ song }}
       </a-menu-item>
     </a-sub-menu>
@@ -70,5 +70,9 @@ export default defineComponent({
   background-image: url("@/../public/logo.svg");
   border-radius: 50%;
   filter: drop-shadow(0 0 0.75rem rgba(231, 73, 104, 0.742));
+}
+.menu {
+  width: 256px;
+  height: 100%;
 }
 </style>

@@ -62,11 +62,11 @@ const selectSong = (index: number) => {
 </script>
 
 <template>
-  <div style="width: 100%; height: 100%">
+  <div class="local-container">
     <div
       class="bg-image"
       :style="{
-        backgroundImage: `linear-gradient(to bottom, rgba(245, 246, 252, 0.52), rgba(117, 19, 93, 0.73)), url(${artist.banner})`,
+        backgroundImage: `linear-gradient(to bottom, rgba(245, 246, 252, 0.52), rgba(117, 19, 93, 0.50)), url(${artist.banner})`,
       }"
     >
       <div class="bg-title">
@@ -120,7 +120,6 @@ const selectSong = (index: number) => {
   width: 500px;
   min-width: 500px;
   margin-left: 32px;
-  /* height: 600px; */
   display: flex;
   justify-content: space-between;
   align-content: flex-start;
@@ -147,5 +146,12 @@ const selectSong = (index: number) => {
   color: white;
   padding: 20px;
   font-size: 50pt;
+  opacity: 80%;
+}
+.local-container {
+  width: 100%;
+  height: 100%;
+  background-color: #ffdee9;
+  background-image: linear-gradient(0deg, #ffdee9 0%, #b5fffc 100%);
 }
 </style>
