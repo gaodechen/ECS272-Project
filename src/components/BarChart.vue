@@ -20,12 +20,12 @@
 <script lang="ts">
 import * as d3 from "d3";
 import { DataLoader } from "@/stores/data";
-import Scheme from '@/assets/scheme'
+import Scheme from "@/assets/scheme";
 import {
   UserOutlined,
   LaptopOutlined,
   NotificationOutlined,
-  DownOutlined
+  DownOutlined,
 } from "@ant-design/icons-vue";
 
 export default {
@@ -81,7 +81,12 @@ export default {
       const svg = d3
         .select("#bar")
         .append("svg")
-        .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
+        .attr(
+          "viewBox",
+          `0 0 ${width + margin.left + margin.right} ${
+            height + margin.top + margin.bottom
+          }`
+        )
         .attr("width", "100%")
         .attr("height", "100%")
         .append("g")
@@ -94,7 +99,7 @@ export default {
         .domain(data.map((d) => d.artist))
         .padding(0.2);
       const yMax = d3.max(data, (d) => d.yVal);
-      const yMin = d3.min(data, (d) => d.yVal) - 0.05*yMax;
+      const yMin = 0;
       const y = d3.scaleLinear().domain([yMin, yMax]).range([height, 0]);
       const tooltip = d3
         .select("body")
@@ -106,7 +111,7 @@ export default {
         .style("padding", "10px")
         .style("background", "rgba(0,0,0,0.6)")
         .style("border-radius", "4px")
-        .style("color", "#fff")
+        .style("color", "#fff");
       const rect = svg
         .selectAll("g")
         .data(data)
@@ -176,7 +181,4 @@ export default {
   /* margin-top: 100px; */
   margin-right: 150px;
 }
-
-
 </style>
-
