@@ -63,13 +63,12 @@ export default defineComponent({
 
 <style scoped>
 .logo {
-  margin: 20px;
-  height: 180px;
-  width: 180px;
+  margin: 20px auto;
+  height: 150px;
+  width: 150px;
   background-size: cover;
   background-image: url("@/../public/logo.svg");
   border-radius: 50%;
-  border: 3px solid white;
   filter: drop-shadow(0 0 0.75rem rgba(231, 73, 104, 0.742));
 }
 </style>
