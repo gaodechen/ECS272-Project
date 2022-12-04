@@ -228,43 +228,6 @@ const drawRadar = (data: any) => {
           .selection(),
       (exit) => exit.remove()
     );
-  const blobCircleWrapper = g
-    .selectAll(".radarCircleWrapper")
-    .data(data)
-    .enter()
-    .append("g")
-    .attr("class", "radarCircleWrapper");
-
-  let tooltip = g.append("text").attr("class", "tooltip").style("opacity", 0.5);
-  blobCircleWrapper
-    .selectAll(".radarInvisibleCircle")
-    .data((d) => d)
-    .enter()
-    .append("circle")
-    .attr("class", "radarInvisibleCircle")
-    .attr("r", 4 * 1.5)
-    .attr("cx", function (d: any, i) {
-      return rScale(d.value) * Math.cos(anglePerSection * i - Math.PI / 2);
-    })
-    .attr("cy", function (d: any, i) {
-      return rScale(d.value) * Math.sin(anglePerSection * i - Math.PI / 2);
-    })
-    .style("fill", "none")
-    .style("pointer-events", "all")
-    .on("mouseover", (d) => {
-      const newX = parseFloat(d3.select(this).attr("cx")) - 10;
-      const newY = parseFloat(d3.select(this).attr("cy")) - 10;
-      tooltip
-        .attr("x", newX)
-        .attr("y", newY)
-        .text(percentFormat(d.value))
-        .transition()
-        .duration(200)
-        .style("opacity", 1);
-    })
-    .on("mouseout", function () {
-      tooltip.transition().duration(200).style("opacity", 0);
-    });
 };
 onMounted(() => {
   setupRadar();
