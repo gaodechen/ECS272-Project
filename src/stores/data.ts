@@ -77,6 +77,9 @@ export class DataLoader {
         } else if (!DataLoader.StringColumns.includes(column)) {
           d[column] = parseFloat(d[column]);
         }
+        if (column === "loudness") {
+          d[column] = -d[column];
+        }
       }
     });
 

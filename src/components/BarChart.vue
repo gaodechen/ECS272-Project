@@ -102,7 +102,7 @@ export default {
         .padding(0.2);
       const yMax = d3.max(data, (d) => d.yVal);
       const yMin = 0;
-      const y = d3.scaleLinear().domain([yMin, yMax]).range([height, 0]);
+      const y = d3.scaleLinear().domain(d3.extent(data, (d) => d.yVal)).range([height, 0]);
       const tooltip = d3
         .select("body")
         .select(".d3-tooltip")
