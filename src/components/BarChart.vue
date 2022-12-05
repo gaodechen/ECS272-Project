@@ -101,8 +101,9 @@ export default {
         .domain(data.map((d) => d.artist))
         .padding(0.2);
       const yMax = d3.max(data, (d) => d.yVal);
-      const yMin = 0;
-      const y = d3.scaleLinear().domain(d3.extent(data, (d) => d.yVal)).range([height, 0]);
+      const yMin = d3.min(data, (d) => d.yVal*0.9);
+      // const y = d3.scaleLinear().domain(d3.extent(data, (d) => d.yVal)).range([height, 0]);
+      const y = d3.scaleLinear().domain([yMin, yMax]).range([height, 0]);
       const tooltip = d3
         .select("body")
         .select(".d3-tooltip")
@@ -151,7 +152,7 @@ export default {
       rect
         .transition()
         .ease(d3.easeLinear)
-        .duration(400)
+        .duration(0)
         .attr("y", (d) => y(d.yVal))
         .attr("height", (d) => height - y(d.yVal))
         .delay((d, i) => i * 100);
