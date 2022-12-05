@@ -5,7 +5,10 @@ import * as similarity from "./similarity";
 import * as log from "../dev/log";
 import seedrandom from "seedrandom";
 import numeric from "numeric";
-import { Matrix, pseudoInverse } from "ml-matrix";
+import {
+  Matrix,
+  pseudoInverse,
+} from "ml-matrix";
 export function getMDSFeature(
   distanceMatrix,
   {

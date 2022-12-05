@@ -44,6 +44,9 @@ export async function initialize() {
   });
 }
 
+export async function selectTrackId(index) {
+  router.push(`/track/${index}`);
+}
 export async function selectTrackAtIndex(index) {
   store.commit("loadingTrack", true);
   const selectedTrack = store.getters.selectedTrack;
@@ -54,8 +57,6 @@ export async function selectTrackAtIndex(index) {
 
     store.commit("loadingTrack", false);
 
-    //const query = { ...this.$route.query, trackID: newTrack.getID() };
-    //router.replace({ query });
     router.push(`/track/${newTrack.getID()}`);
   });
 }

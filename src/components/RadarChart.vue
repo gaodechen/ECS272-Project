@@ -28,6 +28,7 @@ const props = defineProps({
 });
 
 watch(props, () => {
+  clearRadar();
   drawRadar(props.data);
 });
 
@@ -183,6 +184,7 @@ const drawRadar = (data: any) => {
     prev.value > cur.value ? prev : cur
   );
   const colorTransitions = AxisTransition[maxAxis.axis];
+  console.log(colorTransitions)
   const backgroundGradient = bgDefs
     .append("radialGradient")
     .attr("id", "radar-gradient")

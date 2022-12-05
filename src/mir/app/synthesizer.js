@@ -1,10 +1,9 @@
-import { same } from "numeric";
 import HalfMatrix from "./dataStructures/HalfMatrix";
-import { NumberType } from "./dataStructures/NumberType";
 import Track from "./Track";
 import * as log from "../dev/log";
 import Features from "./Features";
 import * as workers from "./workers/workers";
+import emitter from "../emitter/useEmitter";
 
 const preset1 = "AABB";
 const sampleAmount = 250;
@@ -92,7 +91,7 @@ export default class SynthesizedTrack extends Track {
         this.structureSections = result.structureSections;
         this.optimalStructure = result.optimalStructure;
         this.structures = result.structures;
-        this.emitter.emit("readyForPrototypeVis");
+        emitter.emit("readyForPrototypeVis");
       });
   }
   hasAnalysis() {

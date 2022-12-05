@@ -26,19 +26,12 @@ const router = createRouter({
     },
     {
       path: "/track/:trackId",
+      name: "track",
       component: TrackView,
       beforeEnter(to, from, next) {
-        console.log(
-          "Prev stored trackid: ",
-          window.localStorage.getItem("trackId")
-        );
         if (to.params.trackId !== -1) {
           window.localStorage.setItem("trackId", to.params.trackId);
         }
-        console.log(
-          "New stored trackid: ",
-          window.localStorage.getItem("trackId")
-        );
 
         if (auth.isAuthorized()) {
           next();

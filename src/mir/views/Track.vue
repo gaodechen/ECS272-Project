@@ -15,7 +15,6 @@ export default {
   name: "Track",
   data() {
     return {
-      searchQuery: "",
       synthesizerString: "",
       volume: 0.75,
       prevVolume: 0.75,
@@ -90,6 +89,7 @@ export default {
   },
   beforeCreate() {
     app.initialize();
+    console.log("App initialized")
     window.addEventListener("resize", () => {
       this.windowWidth = window.innerWidth;
     });
@@ -108,7 +108,7 @@ export default {
     };
     document.addEventListener("keydown", this._keyListener.bind(this));
   },
-  beforeDestroy() {
+  beforeUnmount() {
     document.removeEventListener("keydown", this._keyListener);
   },
   methods: {

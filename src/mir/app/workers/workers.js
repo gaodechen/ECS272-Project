@@ -1,6 +1,7 @@
 import Matrix from "../dataStructures/Matrix";
 import HalfMatrix from "../dataStructures/HalfMatrix";
 import * as log from "../../dev/log";
+import emitter from "../../emitter/useEmitter";
 
 export async function init() {
     //ssm = new Worker("./ssmWorker.js", { type: "module" });
@@ -80,7 +81,7 @@ export async function computeHarmonicStructure(options) {
                 resolve(event.data);
             }
             if (event.data.state === "processing") {
-                this.emitter.emit("harmonicStructure", event.data);
+                emitter.emit("harmonicStructure", event.data);
             }
             //resolve(event.data);
         };
@@ -174,7 +175,7 @@ export async function startSSM(
 
         ssm.onmessage = (event) => {
             if (event.data.messageType === "update") {
-                this.emitter.emit("update", event.data.message);
+                emitter.emit("update", event.data.message);
             }
             if (event.data.messageType === "final") {
                 isCalculating = false;
@@ -221,11 +222,11 @@ export async function tsne(features) {
         tsneWorker.onmessage = (event) => {
             if (event.data.state === "done") {
                 tsneWorkerBusy = false;
-                this.emitter.emit("tsneReady", event.data.result);
+                emitter.emit("tsneReady", event.data.result);
                 resolve(event.data.result);
             }
             if (event.data.state === "processing") {
-                this.emitter.emit("tsneReady", event.data.result);
+                emitter.emit("tsneReady", event.data.result);
             }
         };
     });

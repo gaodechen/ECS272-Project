@@ -3,13 +3,16 @@ import * as d3 from "d3";
 import { watch, reactive } from "vue";
 import { DataLoader } from "../stores/data";
 import RadarChart from "../components/RadarChart.vue";
-import HolisticStructure from "../mir/components/visualizations/HolisticStructure.vue";
+import { CheckCircleTwoTone } from "@ant-design/icons-vue";
 
 import { useRoute } from "vue-router";
+import { useRouter } from "vue-router";
 import { Artists } from "@/stores/artists";
 
 const route = useRoute();
+const router = useRouter();
 const dataLoader = new DataLoader();
+
 let artist: any = Artists.find((artist) => artist.name === route.params.id);
 let state = reactive({
   selected: Array<Boolean>(artist.songs.length).fill(false),
@@ -60,6 +63,15 @@ const selectSong = (index: number) => {
     radarAttributes
   );
 };
+
+const handleTrackClick = (index: number) => {
+  router
+    .push({
+      name: "track",
+      params: { trackId: artist.trackIds[index] },
+    })
+    .then(() => {});
+};
 </script>
 
 <template>
@@ -86,7 +98,14 @@ const selectSong = (index: number) => {
             :src="artist?.covers[index - 1]"
             @click="selectSong(index - 1)"
           />
-          <div class="song-name">{{ artist?.songs[index - 1] }}</div>
+          <div class="song-name">
+            <div class="song-text">{{ artist?.songs[index - 1] }}</div>
+            <check-circle-two-tone
+              v-if="artist.trackIds[index - 1]"
+              two-tone-color="#52c41a"
+              @click="handleTrackClick(index - 1)"
+            ></check-circle-two-tone>
+          </div>
         </div>
       </div>
       <RadarChart
@@ -136,8 +155,11 @@ const selectSong = (index: number) => {
 }
 
 .song-name {
-  text-align: center;
   width: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  flex-direction: row;
 }
 
 .bg-image {
