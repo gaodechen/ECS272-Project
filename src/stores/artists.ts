@@ -9,6 +9,7 @@ export interface Artist {
   avatar: string;
   songs: string[];
   covers: string[];
+  trackIds?: string[];
 }
 
 export const ArtistNames = [
@@ -427,6 +428,14 @@ export const Artists: Artist[] = [
       "/public/covers/Taylor_Swift_-_Lover.png",
       "/public/covers/Taylor_Swift_-_Lover.png",
       "/public/covers/Taylor_Swift_-_Lover.png",
+    ],
+    trackIds: [
+      "1vrd6UOGamcKNGnSHJQlSt",
+      "3GCL1PydwsLodcpv0Ll1ch",
+      "3DrjZArsPsoqbLzUZZV1Id",
+      "72jCZdH0Lhg93z6Z4hBjgj",
+      "72jCZdH0Lhg93z6Z4hBjgj",
+      "3bIxTsfeNMO7Nt2J3EUKrA",
     ],
   },
 ];

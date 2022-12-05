@@ -21,10 +21,8 @@
 
 <script lang="ts">
 import { defineComponent, reactive, toRefs } from "vue";
-import Icon from "@ant-design/icons-vue";
 import { Artists } from "@/stores/artists";
 import { useRouter } from "vue-router";
-import MusicLogo from "@/public/logo.svg";
 
 export default defineComponent({
   components: {

@@ -21,11 +21,13 @@ import ChordChart from "../components/ChordChart.vue";
 .global-header {
   height: 128px;
   text-align: center;
-  font-size: 32px;
+  font-size: 50px;
+  font-family: 'Courier New', Courier, monospace;
   display: flex;
   justify-content: center;
   align-items: center;
   color: rgb(255, 255, 255);
+  filter: drop-shadow(0 0 0.75rem rgb(237, 79, 111));
 }
 
 .chart-container {

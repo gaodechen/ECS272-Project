@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import * as d3 from "d3";
-import { watch, reactive, render } from "vue";
+import { watch, reactive } from "vue";
 import { DataLoader } from "../stores/data";
 import RadarChart from "../components/RadarChart.vue";
+import HolisticStructure from "../mir/components/visualizations/HolisticStructure.vue";
 
 import { useRoute } from "vue-router";
 import { Artists } from "@/stores/artists";

@@ -168,6 +168,11 @@ const setupRadar = () => {
     .text((d) => d);
 };
 
+const clearRadar = () => {
+  const svg = d3.select(`${svgId}`).select("svg");
+  svg.selectAll("#radar-gradient").remove();
+};
+
 const drawRadar = (data: any) => {
   const svg = d3.select(`${svgId}`).select("svg");
   const g = svg.select("g.canvas");
@@ -177,7 +182,6 @@ const drawRadar = (data: any) => {
   const maxAxis = data.reduce((prev: any, cur: any) =>
     prev.value > cur.value ? prev : cur
   );
-  svg.selectAll("#radar-gradient").remove();
   const colorTransitions = AxisTransition[maxAxis.axis];
   const backgroundGradient = bgDefs
     .append("radialGradient")
