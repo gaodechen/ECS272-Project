@@ -10,6 +10,7 @@ import Navigator from "./components/Navigator.vue";
     </a-layout-sider>
     <RouterView />
   </a-layout>
+  <div class="d3-tooltip"></div>
 </template>
 
 <style scoped>

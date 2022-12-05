@@ -51,6 +51,7 @@ export default {
     handleMenuClick(e) {
       this.feature = e.key;
       this.processData(e.key);
+      d3.select("d3-tooltip").html(``).style("visibility", "hidden");
     },
     processData(feature) {
       const dataLoader = new DataLoader();
@@ -58,6 +59,7 @@ export default {
         d3.csv("./data.csv").then((csvData) => {
           const array = dataLoader.getBarData(csvData, feature);
           d3.select("#bar").select("svg").remove();
+          console.log(array);
           this.update(array);
         });
         res();
@@ -103,8 +105,7 @@ export default {
       const y = d3.scaleLinear().domain([yMin, yMax]).range([height, 0]);
       const tooltip = d3
         .select("body")
-        .append("div")
-        .attr("class", "d3-tooltip")
+        .select(".d3-tooltip")
         .style("position", "absolute")
         .style("z-index", "10")
         .style("visibility", "hidden")
@@ -117,7 +118,6 @@ export default {
         .data(data)
         .enter()
         .append("rect")
-        .attr("fill", staticColor)
         .attr("x", (d, i) => x(d.artist))
         .attr("width", x.bandwidth())
         .attr("y", (d) => y(0))
@@ -131,7 +131,7 @@ export default {
               }: ${d.yVal.toFixed(2)}</div>`
             )
             .style("visibility", "visible");
-          d3.select(this).transition().attr("fill", hoverColor);
+          d3.select(this).transition().attr("opacity", 0.4);
         })
         .on("mousemove", function (event, d) {
           tooltip
@@ -140,7 +140,7 @@ export default {
         })
         .on("mouseout", function (event, d) {
           tooltip.html(``).style("visibility", "hidden");
-          d3.select(this).transition().attr("fill", staticColor);
+          d3.select(this).transition().attr("opacity", 1);
         })
         .attr("cursor", "pointer")
         .on("click", (event, d) => {
