@@ -2,10 +2,9 @@
   <Visualization :width="mainContentWidth" :showPrototype="showPrototype" />
 </template>
 
-<script>
+<script lang="ts">
 import Visualization from "../components/Visualization.vue";
 import * as app from "../app/app";
-import * as auth from "../app/authentication";
 import * as player from "../app/player";
 import * as testing from "../app/testing";
 import * as vis from "../app/vis";

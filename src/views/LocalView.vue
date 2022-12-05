@@ -65,12 +65,15 @@ const selectSong = (index: number) => {
 };
 
 const handleTrackClick = (index: number) => {
+  /*
   router
     .push({
       name: "track",
       params: { trackId: artist.trackIds[index] },
     })
-    .then(() => {});
+    .then(() => {}); */
+  const trackUrl = `http://localhost:8080/track/${artist.trackIds[index]}`;
+  window.open(trackUrl, "_blank", "noreferrer");
 };
 </script>
 
@@ -101,7 +104,7 @@ const handleTrackClick = (index: number) => {
           <div class="song-name">
             <div class="song-text">{{ artist?.songs[index - 1] }}</div>
             <check-circle-two-tone
-              v-if="artist.trackIds[index - 1]"
+              v-if="artist.trackIds && artist.trackIds.length >= index"
               two-tone-color="#52c41a"
               @click="handleTrackClick(index - 1)"
             ></check-circle-two-tone>

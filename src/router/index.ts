@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import GlobalView from "../views/GlobalView.vue";
 import LocalView from "../views/LocalView.vue";
 import TrackView from "../mir/views/Track.vue";
+// import TrackView from "../views/TrackView.vue";
 import LoginView from "../mir/views/Login.vue";
 import CallbackView from "../mir/views/Callback.vue";
 import * as auth from "../mir/app/authentication";

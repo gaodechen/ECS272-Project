@@ -1,5 +1,4 @@
 import * as sim from "./similarity";
-import store from "../store";
 import emitter from "../emitter/useEmitter";
 import Features from "./Features";
 import * as workers from "./workers/workers";
@@ -9,10 +8,7 @@ import * as vis from "./vis";
 import * as filter from "./filter";
 import * as structure from "./structure";
 import * as SSM from "./SSM";
-import * as events from "./events";
 import * as noveltyDetection from "./noveltyDetection";
-import Section from "./Section";
-import * as mds from "./mds";
 import * as pathExtraction from "./pathExtraction";
 import * as d3 from "d3";
 
